@@ -12,7 +12,9 @@ function check_hash()
 {
 	if (recent_hash != window.location.hash) {
 		recent_hash = window.location.hash;
-		eval(recent_hash.substr(1));
+		if (recent_hash.length > 1) {
+			eval(recent_hash.substr(1));
+		}
 	}
 	setTimeout(check_hash, 40);
 }

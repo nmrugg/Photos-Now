@@ -1,7 +1,19 @@
 <?php
 
 define('THUMB_PATH', '.thumb');
+define('PHOTOS_PATH', 'photos/');
 
+define('PHOTO_PILE_COUNT', 5);
+
+define('PHOTO_SIZE', 175);
+
+/// Global variables
+$thumb_start = '<ul class=gallery>';
+$thumb_top1 = '<li><a href="#show(\'';
+$thumb_top2 = '\');"><span>&nbsp;</span><img class=background src=".images/polaroid.png"><img class=thumb src="';
+$thumb_middle = '"><em>';
+$thumb_bottom = '</em></a></li>';
+$thumb_end = '</ul>';
 
 function write_header()
 {
@@ -22,9 +34,12 @@ img {
 	-moz-box-shadow: 0px 0px 5px #000;
 	box-shadow: 0px 0px 5px #000;
 	-webkit-box-shadow: 0px 0px 5px #000;
-	/* For FF 3.5 */
+	/* For FF 3.5 to do curves better on an image. */
     clip-path: url(.images/resources.svg#c1);
+    cursor: pointer;
+    cursor: hand;
 }
+
 a {
 	text-decoration: none;
 }
@@ -42,24 +57,60 @@ function show_back($starting_dir)
 
 function list_dirs($dirs)
 {
+	if (count((array)$dirs) == 0) return null;
+	
+	write_dir_style();
+	
 	foreach ($dirs as $dir) {
-		echo $dir;
+		$dir_images = get_images($dir . '/');
+		echo '<div>';
+		echo '<img src=".images/folder-yellow-back.png" class="folder back">';
+		echo '<img src=".images/folder-yellow-front.png" class="folder front">';
+		for ($i = 0; $i < PHOTO_PILE_COUNT; ++$i) {
+			$rand_key = array_rand($dir_images);
+			//echo find_thumb($dir_images[$rand_key]);
+			echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . round(mt_rand(-6, 6)) . 'deg); left: ' . (($i) * PHOTO_SIZE * -1) . 'px">';
+		}
+		echo '</div>';
 	}
+}
+
+
+function write_dir_style()
+{
+	?>
+<style>
+	.pic_pile {
+		position: relative;
+	}
+	.folder {
+		position: absolute;
+		padding-top: 45px;
+	}
+	.front {
+		z-index: 99;
+	}
+</style>
+<?php
+}
+
+function get_images($dir)
+{
+	return glob($dir . '*.{j,p,g,J,P,G}{p,n,i,P,N,I}{g,f,G,F}', GLOB_BRACE);
 }
 
 
 function list_photos($files)
 {
 	write_styles();
-	echo '<ul class=gallery>';
+	global $thumb_start, $thumb_top1, $thumb_top2, $thumb_middle, $thumb_bottom, $thumb_end;
+	echo $thumb_start;
 	foreach ($files as $file) {
 		$thumb = find_thumb($file);
-		$thumb_top = '<li><a href="#show(\'' . htmlentities($file) . '\');"><span>&nbsp;</span><img class=background src=".images/polaroid.png"><img class=thumb src="';
-		$thumb_middle = '"><em>';
-		$thumb_bottom = '</em></a></li>';
+		$thumb_top = $thumb_top1 . htmlentities($file) . $thumb_top2;
 		echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo($file, PATHINFO_FILENAME)))), 22, "<br>\n", true) . $thumb_bottom;
 	}
-	echo '</ul>';
+	echo $thumb_end;
 }
 
 
@@ -80,7 +131,7 @@ function find_thumb($file)
 function create_thumb($original, $new_filename)
 {
 	/// There are better ways to do this.
-	shell_exec("convert \"" . addslashes($original) . "\" -thumbnail 175x175 \"" . addslashes($new_filename) . "\"");
+	shell_exec("convert \"" . addslashes($original) . "\" -thumbnail " . PHOTO_SIZE . "x" . PHOTO_SIZE . "\"" . addslashes($new_filename) . "\"");
 	if (!file_exists($new_filename)) {
 		/// Try gd.
 	}
