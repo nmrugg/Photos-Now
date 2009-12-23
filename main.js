@@ -30,6 +30,7 @@ function show(img_src)
 	new_img.onclick = function()
 	{
 		document.body.removeChild(this);
+		window.location.hash = "";
 	};
 	/// Is there a way to see the full photo?
 	new_img.dblclick = function()
