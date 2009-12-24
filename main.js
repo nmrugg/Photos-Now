@@ -23,7 +23,7 @@ function check_hash()
 function show(img_src)
 {
 	new_img = document.createElement("img");
-	new_img.visibility = "hidden";
+	new_img.style.visibility = "hidden";
 	new_img.src = img_src;
 	new_img.className = "photo";
 	new_img.title = "Click to close";
@@ -32,15 +32,11 @@ function show(img_src)
 		document.body.removeChild(this);
 		window.location.hash = "";
 	};
-	/// Is there a way to see the full photo?
-	new_img.dblclick = function()
-	{
-		document.location = this.src;
-	}
+	
 	new_img.onload = function()
 	{
 		this.style.left = ((get_innerWidth(window, document) / 2) - (parseInt(this.width) / 2)) + "px";
-		this.visibility = "visible";
+		this.style.visibility = "visible";
 	};
 	new_img.style.MozTransform = "rotate(" + (Math.random() * 11 - 5) + "deg)";
 	new_img.style.WebkitTransform = new_img.style.MozTransform;
