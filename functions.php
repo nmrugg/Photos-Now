@@ -49,6 +49,10 @@ a {
 
 .pic_pile {
 	position: absolute;
+	border: #FFF 2px solid;
+	-moz-box-shadow: 0px 0px 5px #333;
+	box-shadow: 0px 0px 5px #333;
+	-webkit-box-shadow: 0px 0px 5px #333;
 }
 .folder {
 	position: absolute;
