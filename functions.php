@@ -65,19 +65,19 @@ a {
 .dir {
 	float: left;
 	width: 200px!important;
+	height: 250px;
 }
 
 .label {
 	position: relative;
-	padding-top: 120px;
-	width: 100%;
+	padding-top: 105px;
+	width: 80%;
 	z-index:999;
 	text-align: center;
 	font: 25px PisanNormal, sans;
 	color: #444;
 	-moz-transform: rotate(-6deg);
 	-webkit-transform: rotate(-6deg);
-	margin-left: -10px;
 }
 /* End of Picture Pile Styles */
 
@@ -90,11 +90,14 @@ body {
 	background: url(.images/cork-bg.png);
 }
 
-
+.gallery {
+	margin: 0 4px 0 4px;
+}
 .gallery .photo_div {
 	height: 250px;
 	width: 200px;
 	float: left;
+	text-align: center;
 }
 .gallery .photo_div a {
 	padding-bottom: 8px;
@@ -104,6 +107,7 @@ body {
 	position: relative;
 	text-align: center;
 	margin: 10px;
+
 }
 .gallery .background {
 	position: absolute;
@@ -143,7 +147,7 @@ body {
 
 function show_back($starting_dir)
 {
-	
+	create_picture_pile(dirname($starting_dir), '<- Go back&nbsp;&nbsp;&nbsp;');
 }
 
 
@@ -152,24 +156,36 @@ function list_dirs($dirs)
 	if (count((array)$dirs) == 0) return null;
 	
 	foreach ($dirs as $dir) {
-		$dir_images = get_images($dir . '/');
-		echo '<a href="?dir=' . urlencode(substr($dir, strlen(PHOTOS_PATH)) . '/') . '">';
-		echo '<div class=dir>';
-		echo '<img src=".images/folder-yellow-back.png" class="folder back">';
-		echo '<img src=".images/folder-yellow-front.png" class="folder front">';
-		for ($i = 0; $i < PHOTO_PILE_COUNT; ++$i) {
-			$rand_key = array_rand($dir_images);
-			//echo find_thumb($dir_images[$rand_key]);
-			//echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . round(mt_rand(-6, 6)) . 'deg); left: ' . (($i) * PHOTO_SIZE * -1) . 'px">';
-			$rotate = round(mt_rand(-6, 6));
-			echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . $rotate . 'deg);-webkit-transform: rotate(' . $rotate . 'deg);">';
-		}
-		echo '<div class=label>' . basename($dir) . '</div>';
-		echo "</div>";
-		echo "</a>";
+		create_picture_pile($dir);
 	}
 }
 
+
+function create_picture_pile($dir, $dir_name = "")
+{
+	if ($dir_name == "") $dir_name = basename($dir);
+	$dir_images = get_images($dir . '/');
+	$dir_path = substr($dir, strlen(PHOTOS_PATH)) . '/';
+	if ($dir_path == "/" || $dir_path == "") {
+		$url = '';
+	} else {
+		$url = 'dir=' . urlencode($dir_path);
+	}
+	echo '<a href="?' . $url . '">';
+	echo '<div class=dir>';
+	echo '<img src=".images/folder-yellow-back.png" class="folder back">';
+	echo '<img src=".images/folder-yellow-front.png" class="folder front">';
+	for ($i = 0; $i < PHOTO_PILE_COUNT; ++$i) {
+		$rand_key = array_rand($dir_images);
+		//echo find_thumb($dir_images[$rand_key]);
+		//echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . round(mt_rand(-6, 6)) . 'deg); left: ' . (($i) * PHOTO_SIZE * -1) . 'px">';
+		$rotate = round(mt_rand(-6, 6));
+		echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . $rotate . 'deg);-webkit-transform: rotate(' . $rotate . 'deg);">';
+	}
+	echo '<div class=label>' . $dir_name . '</div>';
+	echo "</div>";
+	echo "</a>";
+}
 
 
 function get_images($dir)
