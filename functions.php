@@ -66,6 +66,18 @@ a {
 	width: 200px!important;
 }
 
+.label {
+	position: relative;
+	padding-top: 120px;
+	width: 100%;
+	z-index:999;
+	text-align: center;
+	font: 25px PisanNormal, sans;
+	color: #444;
+	-moz-transform: rotate(-6deg);
+	-webkit-transform: rotate(-6deg);
+	margin-left: -10px;
+}
 /* End of Picture Pile Styles */
 
 
@@ -147,8 +159,10 @@ function list_dirs($dirs)
 			$rand_key = array_rand($dir_images);
 			//echo find_thumb($dir_images[$rand_key]);
 			//echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . round(mt_rand(-6, 6)) . 'deg); left: ' . (($i) * PHOTO_SIZE * -1) . 'px">';
-			echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . round(mt_rand(-6, 6)) . 'deg); lef: ' . (($i) * PHOTO_SIZE * -1) . 'px">';
+			$rotate = round(mt_rand(-6, 6));
+			echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . $rotate . 'deg);-webkit-transform: rotate(' . $rotate . 'deg);">';
 		}
+		echo '<div class=label>' . basename($dir) . '</div>';
 		echo "</div>\n";
 	}
 }
