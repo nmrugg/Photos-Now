@@ -4,7 +4,7 @@ require 'functions.php';
 
 write_header();
 
-if (!isset($_REQUEST['dir']) || $_REQUEST['dir'] == "" || substr($_REQUEST['dir'], 0, 1) == "." || !is_dir($_REQUEST['dir'])) $_REQUEST['dir'] = "";
+if (!isset($_REQUEST['dir']) || $_REQUEST['dir'] == "" || substr($_REQUEST['dir'], 0, 1) == "." || !is_dir(PHOTOS_PATH . $_REQUEST['dir'])) $_REQUEST['dir'] = "";
 
 if ($_REQUEST['dir'] != "") show_back(PHOTOS_PATH . $_REQUEST['dir']);
 

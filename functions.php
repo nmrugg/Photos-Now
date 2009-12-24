@@ -53,6 +53,7 @@ a {
 	-moz-box-shadow: 0px 0px 5px #333;
 	box-shadow: 0px 0px 5px #333;
 	-webkit-box-shadow: 0px 0px 5px #333;
+	background: #FFF;
 }
 .folder {
 	position: absolute;
@@ -152,7 +153,8 @@ function list_dirs($dirs)
 	
 	foreach ($dirs as $dir) {
 		$dir_images = get_images($dir . '/');
-		echo '<div class=dir>&nbsp;';
+		echo '<a href="?dir=' . urlencode(substr($dir, strlen(PHOTOS_PATH)) . '/') . '">';
+		echo '<div class=dir>';
 		echo '<img src=".images/folder-yellow-back.png" class="folder back">';
 		echo '<img src=".images/folder-yellow-front.png" class="folder front">';
 		for ($i = 0; $i < PHOTO_PILE_COUNT; ++$i) {
@@ -163,7 +165,8 @@ function list_dirs($dirs)
 			echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . $rotate . 'deg);-webkit-transform: rotate(' . $rotate . 'deg);">';
 		}
 		echo '<div class=label>' . basename($dir) . '</div>';
-		echo "</div>\n";
+		echo "</div>";
+		echo "</a>";
 	}
 }
 
