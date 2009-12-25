@@ -30,7 +30,7 @@ function show(img_src)
 	new_img.onclick = function()
 	{
 		document.body.removeChild(this);
-		window.location.hash = "";
+		window.location.hash = "//";
 	};
 	
 	new_img.onload = function()

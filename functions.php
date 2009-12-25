@@ -107,6 +107,7 @@ body {
 	position: relative;
 	text-align: center;
 	margin: 10px;
+	/*background: url(.images/loader.gif) center no-repeat;*/
 
 }
 .gallery .background {
@@ -117,6 +118,7 @@ body {
 }
 .gallery .thumb {
 	padding: 7px;
+	/*opacity:.7;*/
 }
 
 .gallery span {
@@ -179,8 +181,10 @@ function create_picture_pile($dir, $dir_name = "")
 		$rand_key = array_rand($dir_images);
 		//echo find_thumb($dir_images[$rand_key]);
 		//echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . round(mt_rand(-6, 6)) . 'deg); left: ' . (($i) * PHOTO_SIZE * -1) . 'px">';
-		$rotate = round(mt_rand(-6, 6));
-		echo '<img src="' . find_thumb($dir_images[$rand_key]) . '" class="pic_pile" style="-moz-transform: rotate(' . $rotate . 'deg);-webkit-transform: rotate(' . $rotate . 'deg);">';
+		if (isset($dir_images[$rand_key])) {
+			$rotate = round(mt_rand(-6, 6));
+			echo '<img src="' . htmlentities(find_thumb($dir_images[$rand_key])) . '" class="pic_pile" style="-moz-transform: rotate(' . $rotate . 'deg);-webkit-transform: rotate(' . $rotate . 'deg);">';
+		}
 	}
 	echo '<div class=label>' . $dir_name . '</div>';
 	echo "</div>";
