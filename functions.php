@@ -188,7 +188,7 @@ function create_picture_pile($dir, $dir_name = "")
 	}
 	echo '<div class=label>' . $dir_name . '</div>';
 	echo "</div>";
-	echo "</a>";
+	echo "</a>\n";
 }
 
 
