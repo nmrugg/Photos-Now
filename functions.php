@@ -8,12 +8,10 @@ define('PHOTO_PILE_COUNT', 5);
 define('PHOTO_SIZE', 175);
 
 /// Global variables
-$thumb_start = '';
 $thumb_top1 = '<div class=photo_div><a href="#show(\'';
 $thumb_top2 = '\');"><span>&nbsp;</span><img class=background src=".images/polaroid.png"><img class=thumb src="';
 $thumb_middle = '"><em>';
 $thumb_bottom = "</em></a></div>\n";
-$thumb_end = "";
 
 function write_header()
 {
@@ -200,14 +198,12 @@ function get_images($dir)
 
 function list_photos($files)
 {
-	global $thumb_start, $thumb_top1, $thumb_top2, $thumb_middle, $thumb_bottom, $thumb_end;
-	echo $thumb_start;
+	global $thumb_top1, $thumb_top2, $thumb_middle, $thumb_bottom, $thumb_end;
 	foreach ($files as $file) {
 		$thumb = find_thumb($file);
 		$thumb_top = $thumb_top1 . htmlentities($file) . $thumb_top2;
-		echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo($file, PATHINFO_FILENAME)))), 22, "<br>\n", true) . $thumb_bottom;
+		echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo($file, PATHINFO_FILENAME)))), 22	, "<br>\n", true) . $thumb_bottom;
 	}
-	echo $thumb_end;
 }
 
 
@@ -241,8 +237,7 @@ function title_case($title)
 	$preps_articles_conjunctions = array('of','a','the','and','an','or','nor','but','is','if','then', 'else','when','at','from','by','on','off','for','in','out','over','to','into','with');
 	$words = explode(' ', $title);
 	foreach ($words as $key => $word) {
-		if ($key == 0 || !in_array($word, $preps_articles_conjunctions))
-		$words[$key] = ucwords(strtolower($word));
+		if ($key == 0 || !in_array($word, $preps_articles_conjunctions)) $words[$key] = ucwords(strtolower($word));
 	}
 	
 	$newtitle = implode(' ', $words);
