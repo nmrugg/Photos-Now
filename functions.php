@@ -8,10 +8,12 @@ define('PHOTO_PILE_COUNT', 5);
 define('PHOTO_SIZE', 175);
 
 /// Global variables
+$thumb_start = '';
 $thumb_top1 = '<div class=photo_div><a href="#show(\'';
 $thumb_top2 = '\');"><span>&nbsp;</span><img class=background src=".images/polaroid.png"><img class=thumb src="';
 $thumb_middle = '"><em>';
 $thumb_bottom = "</em></a></div>\n";
+$thumb_end = "";
 
 function write_header()
 {
@@ -198,12 +200,14 @@ function get_images($dir)
 
 function list_photos($files)
 {
-	global $thumb_top1, $thumb_top2, $thumb_middle, $thumb_bottom, $thumb_end;
+	global $thumb_start, $thumb_top1, $thumb_top2, $thumb_middle, $thumb_bottom, $thumb_end;
+	echo $thumb_start;
 	foreach ($files as $file) {
 		$thumb = find_thumb($file);
 		$thumb_top = $thumb_top1 . htmlentities($file) . $thumb_top2;
-		echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo($file, PATHINFO_FILENAME)))), 22	, "<br>\n", true) . $thumb_bottom;
+		echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo($file, PATHINFO_FILENAME)))), 22, "<br>\n", true) . $thumb_bottom;
 	}
+	echo $thumb_end;
 }
 
 
@@ -220,24 +224,60 @@ function find_thumb($file)
 	return $path . $filename;
 }
 
-
 function create_thumb($original, $new_filename)
 {
-	/// There are better ways to do this.
+	/// Attempt to create the thumbnail with ImageMagick.
+	///NOTE: It would be good to add a constant for the "convert" executable.
 	$res = shell_exec("convert \"" . addslashes($original) . "\" -thumbnail " . PHOTO_SIZE . "x" . PHOTO_SIZE . " \"" . addslashes($new_filename) . "\" 2>&1");
 	
+	/// Did ImageMagick work?
 	if (!file_exists($new_filename)) {
-		/// Try gd.
+		/// Attempt to create the thumbnail with GD.
+		
+		list($orig_width, $orig_height, $imagetype) = getimagesize($original);
+		
+		$ratio_orig = $orig_width / $orig_height;
+		
+		/// Is the image is wider than it is tall?
+		if ($orig_width > $orig_height) {
+			$maxwidth = PHOTO_SIZE;
+			$maxheight = round(PHOTO_SIZE / $ratio_orig);
+		} else {
+			$maxheight = PHOTO_SIZE;
+			$maxwidth = round(PHOTO_SIZE * $ratio_orig);
+		}
+		
+		/// Create blank image for the thumbnail.
+		$thumb = imagecreatetruecolor($maxwidth, $maxheight);
+		
+		$type_unknown = false;
+		
+		if ($imagetype == 1) {
+			$source = imagecreatefromgif($original);
+			imagecopyresampled($thumb, $source, 0, 0, 0, 0, $maxwidth, $maxheight, $orig_width, $orig_height);
+		} elseif ($imagetype == 2) {
+			$source = imagecreatefromjpeg($original);
+			imagecopyresampled($thumb, $source, 0, 0, 0, 0, $maxwidth, $maxheight, $orig_width, $orig_height);
+		} elseif ($imagetype == 3) {
+			$source = imagecreatefrompng($original);
+			imagecopyresampled($thumb, $source, 0, 0, 0, 0, $maxwidth, $maxheight, $orig_width, $orig_height);
+		} else {
+			$type_unknown = true;
+		}
+		
+		if (!$type_unknown) {
+			imagejpeg($thumb, $new_filename, 85);
+		}
 	}
 }
-
 
 function title_case($title)
 {
 	$preps_articles_conjunctions = array('of','a','the','and','an','or','nor','but','is','if','then', 'else','when','at','from','by','on','off','for','in','out','over','to','into','with');
 	$words = explode(' ', $title);
 	foreach ($words as $key => $word) {
-		if ($key == 0 || !in_array($word, $preps_articles_conjunctions)) $words[$key] = ucwords(strtolower($word));
+		if ($key == 0 || !in_array($word, $preps_articles_conjunctions))
+		$words[$key] = ucwords(strtolower($word));
 	}
 	
 	$newtitle = implode(' ', $words);
