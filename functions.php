@@ -205,9 +205,9 @@ function list_photos($files)
 	foreach ($files as $file) {
 		$thumb = find_thumb($file);
 		$thumb_top = $thumb_top1 . htmlentities($file) . $thumb_top2;
-		echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo($file, PATHINFO_FILENAME)))), 22, "<br>\n", true) . $thumb_bottom;
 	}
 	echo $thumb_end;
+        echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo_filename($file)))), 22, "<br>\n", true) . $thumb_bottom;
 }
 
 
@@ -284,3 +284,13 @@ function title_case($title)
 	return $newtitle;
 }
 
+function pathinfo_filename($path)
+{
+    /// PHP >= 5.2.0
+    if (defined('PATHINFO_FILENAME')) {
+        return pathinfo($path, PATHINFO_FILENAME);
+    } else {
+        $path_parts = pathinfo($path);
+        return substr($path_parts['basename'], 0, strlen($path_parts['basename']) - strlen($path_parts['extension']) - 1);
+    }
+}
