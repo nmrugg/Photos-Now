@@ -281,7 +281,7 @@ function create_thumb($original, $new_filename)
 
 function title_case($title)
 {
-    $preps_articles_conjunctions = array('of','a','the','and','an','or','nor','but','is','if','then', 'else','when','at','from','by','on','off','for','in','out','over','to','into','with');
+    $preps_articles_conjunctions = array('of', 'a', 'the', 'and', 'an', 'or', 'nor', 'but', 'is', 'if', 'then', 'else', 'when', 'at', 'from', 'by', 'on', 'off', 'for', 'in', 'out', 'over', 'to', 'into', 'with');
     $words = explode(' ', $title);
     foreach ($words as $key => $word) {
         if ($key == 0 || !in_array($word, $preps_articles_conjunctions))
