@@ -212,7 +212,7 @@ function list_photos($files)
     echo $thumb_start;
     foreach ($files as $file) {
         $thumb = find_thumb($file);
-        $thumb_top = $thumb_top1 . htmlentities($file) . $thumb_top2;
+        $thumb_top = $thumb_top1 . addslashes(htmlentities($file)) . $thumb_top2;
         echo $thumb_top . htmlentities($thumb) . $thumb_middle . wordwrap(htmlentities(title_case(str_replace("_", " ", pathinfo_filename($file)))), 22, "<br>\n", true) . $thumb_bottom;
     }
     echo $thumb_end;
