@@ -302,3 +302,23 @@ function pathinfo_filename($path)
         return substr($path_parts['basename'], 0, strlen($path_parts['basename']) - strlen($path_parts['extension']) - 1);
     }
 }
+
+
+function get_file_date($filename)
+{
+    if (!file_exists($filename)) {
+        return false;
+    }
+    $exif = exif_read_data($filename, 0, true);
+    if (isset($exif['EXIF']) && isset($exif['EXIF']['DateTimeOriginal']) && $exif['EXIF']['DateTimeOriginal'] != "") {
+        $filetime = strtotime($exif['EXIF']['DateTimeOriginal']);
+    } elseif (isset($exif['EXIF']) && isset($exif['EXIF']['DateTimeDigitized']) && $exif['EXIF']['DateTimeDigitized'] != "") {
+        $filetime = strtotime($exif['EXIF']['DateTimeDigitized']);
+    } else {
+        ///TODO: Try PEL if exif_read_data() fails.
+        $filetime = filemtime($filename);
+    }
+    
+    ///NOTE: month_str is the month as a string, i.e., "January" instead of "01".
+    return Array('timestamp' => $filetime, 'year' => date('Y', $filetime), 'month' => date('m', $filetime), 'month_str' => date('F', $filetime));
+}
