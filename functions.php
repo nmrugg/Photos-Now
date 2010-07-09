@@ -157,7 +157,7 @@ body {
 
 function show_back($starting_dir)
 {
-    create_picture_pile(dirname($starting_dir), '<- Go back&nbsp;&nbsp;&nbsp;');
+    create_picture_pile(dirname($starting_dir), '<- Go back&nbsp;&nbsp;&nbsp;<br><small>(' . basename(dirname($starting_dir)) . ')</small>');
 }
 
 
