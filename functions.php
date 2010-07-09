@@ -21,6 +21,10 @@ function write_header()
 <!DOCTYPE html>
 <html><head>
 <style type="text/css">
+
+html {
+    font-family: PisanNormal, sans;
+}
 img {
     border: none;
 }
@@ -35,13 +39,14 @@ img {
     box-shadow: 0px 0px 5px #000;
     -webkit-box-shadow: 0px 0px 5px #000;
     /* For FF 3.5 to do curves better on an image. */
-    clip-path: url(.images/resources.svg#c1);
+    clip-path: url(.images/resources.xml#c1);
     cursor: pointer;
     cursor: hand;
 }
 
 a {
     text-decoration: none;
+    color: #444;
 }
 
 
@@ -74,10 +79,10 @@ a {
     width: 80%;
     z-index:999;
     text-align: center;
-    font: 25px PisanNormal, sans;
     color: #444;
     -moz-transform: rotate(-6deg);
     -webkit-transform: rotate(-6deg);
+    font-size: 25px;
 }
 /* End of Picture Pile Styles */
 
@@ -131,13 +136,16 @@ body {
 .gallery em {
     display: block;
     text-align: center;
-    font: 20px PisanNormal, sans;
+    font-size: 20px;
     color: #444;
+    font-style: normal;
 }
 @font-face {
-    font-family: 'PisanNormal';
-    src: url('.fonts/PISAN.eot');
-    src: local('Pisan Normal'), local('Pisan-Normal'), url('.fonts/PISAN.woff') format('woff'), url('.fonts/PISAN.TTF') format('truetype'), url('.fonts/PISAN.svg#Pisan-Normal') format('svg');
+	font-family: 'PisanNormal';
+	src: url('.fonts/PISAN.eot');
+	src: local('Pisan'), url('.fonts/PISAN.TTF.woff') format('woff'), url('.fonts/PISAN.ttf') format('truetype'), url('.fonts/PISAN.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
 }
 
 /* End of picture stlyes */
