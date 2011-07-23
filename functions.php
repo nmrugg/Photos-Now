@@ -15,6 +15,9 @@ $thumb_middle = '"><em>';
 $thumb_bottom = "</em></a></div>\n";
 $thumb_end = "";
 
+///TEMP GLOBAL VAR
+$_REQUEST['arrange'] = 'date';
+
 function write_header()
 {
     ?>
@@ -160,6 +163,22 @@ function show_back($starting_dir)
     create_picture_pile(dirname($starting_dir), '<- Go back&nbsp;&nbsp;&nbsp;<br><small>(' . basename(dirname($starting_dir)) . ')</small>');
 }
 
+function get_dirs($dir_path)
+{
+    ///DATE CODE
+    $debug = false;
+    if ($_REQUEST['arrange'] == 'date' && $debug) {
+        die($dir_path);
+    } else {
+        $dirs = glob(__DIR__ . '/' . PHOTOS_PATH . $dir_path . '*', GLOB_ONLYDIR);
+        foreach ($dirs as &$value) {
+            $value = substr($value, strlen(__DIR__ . '/'));
+        }
+        
+        return $dirs;
+    }
+}
+
 
 function list_dirs($dirs)
 {
@@ -202,7 +221,12 @@ function create_picture_pile($dir, $dir_name = "")
 
 function get_images($dir)
 {
-    return glob($dir . '*.{j,p,g,J,P,G}{p,n,i,P,N,I}{g,f,G,F}', GLOB_BRACE);
+    $imgs = glob(__DIR__ . '/' . $dir . '*.{j,p,g,J,P,G}{p,n,i,P,N,I}{g,f,G,F}', GLOB_BRACE);
+    foreach ($imgs as &$value) {
+        $value = substr($value, strlen(__DIR__ . '/'));
+    }
+    
+    return $imgs;
 }
 
 
@@ -221,7 +245,7 @@ function list_photos($files)
 
 function find_thumb($file)
 {
-    $path = pathinfo($file, PATHINFO_DIRNAME) . '/' . THUMB_PATH . '/';
+    $path = pathinfo(__DIR__ . '/' . $file, PATHINFO_DIRNAME) . '/' . THUMB_PATH . '/';
     $filename = pathinfo($file, PATHINFO_BASENAME);
     if (!is_dir($path)) {
         mkdir($path);
@@ -229,20 +253,21 @@ function find_thumb($file)
     if (!file_exists($path . $filename)) {
         create_thumb($file, $path . $filename);
     }
-    return $path . $filename;
+    
+    return substr($path, strlen(__DIR__ . '/')) . $filename;
 }
 
 function create_thumb($original, $new_filename)
 {
     /// Attempt to create the thumbnail with ImageMagick.
     ///NOTE: It would be good to add a constant for the "convert" executable.
-    $res = shell_exec("convert \"" . addslashes($original) . "\" -thumbnail " . PHOTO_SIZE . "x" . PHOTO_SIZE . " \"" . addslashes($new_filename) . "\" 2>&1");
+    $res = shell_exec("convert '" . addslashes(__DIR__ . '/' . $original) . "' -thumbnail " . PHOTO_SIZE . "x" . PHOTO_SIZE . " '" . addslashes($new_filename) . "' 2>&1");
     
     /// Did ImageMagick work?
     if (!file_exists($new_filename)) {
         /// Attempt to create the thumbnail with GD.
         
-        list($orig_width, $orig_height, $imagetype) = getimagesize($original);
+        list($orig_width, $orig_height, $imagetype) = getimagesize(__DIR__ . '/' . $original);
         
         $ratio_orig = $orig_width / $orig_height;
         
@@ -261,13 +286,13 @@ function create_thumb($original, $new_filename)
         $type_unknown = false;
         
         if ($imagetype == 1) {
-            $source = imagecreatefromgif($original);
+            $source = imagecreatefromgif(__DIR__ . '/' . $original);
             imagecopyresampled($thumb, $source, 0, 0, 0, 0, $maxwidth, $maxheight, $orig_width, $orig_height);
         } elseif ($imagetype == 2) {
-            $source = imagecreatefromjpeg($original);
+            $source = imagecreatefromjpeg(__DIR__ . '/' . $original);
             imagecopyresampled($thumb, $source, 0, 0, 0, 0, $maxwidth, $maxheight, $orig_width, $orig_height);
         } elseif ($imagetype == 3) {
-            $source = imagecreatefrompng($original);
+            $source = imagecreatefrompng(__DIR__ . '/' . $original);
             imagecopyresampled($thumb, $source, 0, 0, 0, 0, $maxwidth, $maxheight, $orig_width, $orig_height);
         } else {
             $type_unknown = true;
@@ -283,9 +308,11 @@ function title_case($title)
 {
     $preps_articles_conjunctions = array('of', 'a', 'the', 'and', 'an', 'or', 'nor', 'but', 'is', 'if', 'then', 'else', 'when', 'at', 'from', 'by', 'on', 'off', 'for', 'in', 'out', 'over', 'to', 'into', 'with');
     $words = explode(' ', $title);
+    $words_len = count($words);
     foreach ($words as $key => $word) {
-        if ($key == 0 || !in_array($word, $preps_articles_conjunctions))
-        $words[$key] = ucwords(strtolower($word));
+        if ($key === 0 || $key === $words_len || !in_array($word, $preps_articles_conjunctions)) {
+            $words[$key] = ucwords(strtolower($word));
+        }
     }
     
     $newtitle = implode(' ', $words);
