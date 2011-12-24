@@ -1,5 +1,7 @@
 <?php
 
+/// RENAME TO config.php
+
 /// Where are the pictures located?
 define('PHOTOS_PATH', 'photos/');
 
