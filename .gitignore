@@ -2,3 +2,4 @@
 *.JPG
 .ignore
 photos
+config.php

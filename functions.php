@@ -1,11 +1,10 @@
 <?php
 
-define('THUMB_PATH', '.thumb');
-define('PHOTOS_PATH', 'photos/');
+if (!defined("__DIR__")) {
+    define("__DIR__", getcwd());
+}
 
-define('PHOTO_PILE_COUNT', 5);
-
-define('PHOTO_SIZE', 175);
+require_once "config.php";
 
 /// Global variables
 $thumb_start = '';
@@ -23,6 +22,7 @@ function write_header()
     ?>
 <!DOCTYPE html>
 <html><head>
+<title>Photos</title>
 <style type="text/css">
 
 html {
@@ -158,9 +158,34 @@ body {
     <?php
 }
 
+function escape_single_quotes($str)
+{
+    if (substr(PHP_OS, 0, 3) === 'WIN') {
+        ///FIXME: How to do this on Windows?
+        return $str;
+    } else {
+        return str_replace("\\'", "'\\''", $str);
+    }
+}
+
+function beautify_name($name)
+{
+    $name = str_replace("_", " ", $name);
+    
+    $tmp_name = $name;
+    /// Reorder dates and add slashes.
+    $name = preg_replace('/^([1-2]\d\d\d)([01]\d)([0-3]\d)?$/', '$2/$3/$1', $name);
+    /// If the day is left out, it will produce two consecutive slashes, so one must be removed.
+    if ($name !== $tmp_name) {
+        $name = str_replace("//", "/", $name);
+    }
+    
+    return wordwrap(htmlentities(title_case($name)), 22, "<br>\n", true);
+}
+
 function show_back($starting_dir)
 {
-    create_picture_pile(dirname($starting_dir), '<- Go back&nbsp;&nbsp;&nbsp;<br><small>(' . basename(dirname($starting_dir)) . ')</small>');
+    create_picture_pile(dirname($starting_dir), '<- Go back&nbsp;&nbsp;&nbsp;<br><small>(' . beautify_name(basename(dirname($starting_dir))) . ')</small>', false);
 }
 
 function get_dirs($dir_path)
@@ -171,6 +196,7 @@ function get_dirs($dir_path)
         die($dir_path);
     } else {
         $dirs = glob(__DIR__ . '/' . PHOTOS_PATH . $dir_path . '*', GLOB_ONLYDIR);
+        
         foreach ($dirs as &$value) {
             $value = substr($value, strlen(__DIR__ . '/'));
         }
@@ -190,7 +216,7 @@ function list_dirs($dirs)
 }
 
 
-function create_picture_pile($dir, $dir_name = "")
+function create_picture_pile($dir, $dir_name = "", $beautify = true)
 {
     if ($dir_name == "") $dir_name = basename($dir);
     $dir_images = get_images($dir . '/');
@@ -213,7 +239,7 @@ function create_picture_pile($dir, $dir_name = "")
             echo '<img src="' . htmlentities(find_thumb($dir_images[$rand_key])) . '" class="pic_pile" style="-moz-transform: rotate(' . $rotate . 'deg);-webkit-transform: rotate(' . $rotate . 'deg);">';
         }
     }
-    echo '<div class=label>' . $dir_name . '</div>';
+    echo '<div class=label>' . ($beautify ? beautify_name($dir_name) : $dir_name). '</div>';
     echo "</div>";
     echo "</a>\n";
 }
@@ -261,7 +287,7 @@ function create_thumb($original, $new_filename)
 {
     /// Attempt to create the thumbnail with ImageMagick.
     ///NOTE: It would be good to add a constant for the "convert" executable.
-    $res = shell_exec("convert '" . addslashes(__DIR__ . '/' . $original) . "' -thumbnail " . PHOTO_SIZE . "x" . PHOTO_SIZE . " '" . addslashes($new_filename) . "' 2>&1");
+    $res = shell_exec("convert '" . escape_single_quotes(addslashes(__DIR__ . '/' . $original)) . "' -thumbnail " . PHOTO_SIZE . "x" . PHOTO_SIZE . " '" . escape_single_quotes(addslashes($new_filename)) . "' 2>&1");
     
     /// Did ImageMagick work?
     if (!file_exists($new_filename)) {

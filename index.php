@@ -8,7 +8,6 @@ if (!isset($_REQUEST['dir']) || $_REQUEST['dir'] == "" || substr($_REQUEST['dir'
     $_REQUEST['dir'] = "";
 }
 
-
 echo '<div class=gallery>';
 
 if ($_REQUEST['dir'] !== "") {
